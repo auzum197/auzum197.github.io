@@ -2,7 +2,6 @@
 // Built lazily on first interaction (browsers block autoplay).
 (() => {
   let ctx, master, amp, seqBus, seqFb, seqWet, started = false, playing = false;
-  let silentTag;
   const TARGET = 0.32; // overall loudness when on
 
   // --- Sequencer (Berlin School / Tangerine Dream style) ---
@@ -222,28 +221,7 @@
     setTimeout(scheduleSwell, 8000 + Math.random() * 10000); // first swell after a bit
   }
 
-  // --- iOS audio unlock helpers ---
-
-  // A short silent WAV as a data URI, looped through an <audio> element. On
-  // iOS this nudges the page's audio session toward "playback", which helps
-  // Web Audio play even when the hardware mute switch is on.
-  function silentWavUri() {
-    const sampleRate = 8000, seconds = 0.4;
-    const n = Math.floor(sampleRate * seconds);
-    const buf = new ArrayBuffer(44 + n);
-    const v = new DataView(buf);
-    const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-    w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVE');
-    w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
-    v.setUint16(22, 1, true); v.setUint32(24, sampleRate, true);
-    v.setUint32(28, sampleRate, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
-    w(36, 'data'); v.setUint32(40, n, true);
-    for (let i = 0; i < n; i++) v.setUint8(44 + i, 128); // 8-bit silence
-    let bin = '';
-    const bytes = new Uint8Array(buf);
-    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-    return 'data:audio/wav;base64,' + btoa(bin);
-  }
+  // --- iOS audio unlock ---
 
   // Unlock + resume the context synchronously within a user gesture (iOS).
   function unlock() {
@@ -259,16 +237,6 @@
 
     // iOS can report 'suspended' or 'interrupted'; resume in both cases
     if (ctx.state !== 'running') ctx.resume();
-
-    // Looping silent media element for the mute-switch workaround
-    if (!silentTag) {
-      silentTag = document.createElement('audio');
-      silentTag.loop = true;
-      silentTag.preload = 'auto';
-      silentTag.setAttribute('playsinline', '');
-      silentTag.src = silentWavUri();
-    }
-    silentTag.play().catch(() => {});
   }
 
   function toggle() {
@@ -291,7 +259,6 @@
   document.addEventListener('visibilitychange', () => {
     if (ctx && playing && document.visibilityState === 'visible' && ctx.state !== 'running') {
       ctx.resume();
-      if (silentTag) silentTag.play().catch(() => {});
     }
   });
 
