@@ -10,7 +10,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // --- Post-processing: fisheye / barrel distortion ---
 // The scene is rendered into a texture, then drawn to the screen through a
 // shader that warps the image outward from the center for a slight lens bulge.
-const FISHEYE = 0.5; // distortion strength
+const FISHEYE = 0.4; // distortion strength
 
 const rt = new THREE.WebGLRenderTarget(
 	window.innerWidth * PIXEL_RATIO,
