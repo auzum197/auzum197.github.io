@@ -177,13 +177,27 @@ ring.renderOrder = 999;
 scene.add(ring);
 
 // --- Animation ---
-let last = performance.now();
+const start = performance.now();
+let last = start;
+
+// Globe entrance: gentle scale-up, eased, distinct from the scene's fade
+const INTRO_DELAY = 0.4;   // let the room appear first
+const INTRO_DUR = 1.6;     // seconds
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
 function animate(now) {
   const dt = (now - last) / 1000;
   last = now;
 
   // Globe rotation
   globe.rotation.y += dt * 1.4;
+
+  // Scale the globe (and its circumference) in once, easing toward full size
+  const elapsed = (now - start) / 1000 - INTRO_DELAY;
+  const t = Math.min(Math.max(elapsed / INTRO_DUR, 0), 1);
+  const s = 0.9 + 0.1 * easeOut(t);
+  globe.scale.setScalar(s);
+  ring.scale.setScalar(s);
 
   renderer.render(scene, camera);
   requestAnimationFrame(animate);

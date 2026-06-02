@@ -22,6 +22,13 @@ html, body {
   display: block;
   width: 100vw;
   height: 100vh;
+  /* Scene appears first, a slow steady fade */
+  animation: sceneIn 1.8s ease-out both;
+}
+
+@keyframes sceneIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .caption {
@@ -40,4 +47,18 @@ html, body {
   font-size: clamp(1.5rem, 6vw, 4rem);
   color: #FFF7AB;
   mix-blend-mode: difference;
+  /* Text arrives last, after the scene settles, with a soft upward drift */
+  animation: captionIn 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1.4s both;
+}
+
+@keyframes captionIn {
+  from { opacity: 0; transform: translate(-50%, -42%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #scene,
+  .caption {
+    animation: none;
+  }
 }
