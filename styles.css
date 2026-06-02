@@ -1,0 +1,43 @@
+:root {
+  --bg: #080808;
+  --line: #EBE7DA;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--line);
+  font-family: "Courier New", Courier, monospace;
+}
+
+#scene {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.caption {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  font-family: "Jacques Francois", serif;
+  font-weight: bolder;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-indent: 0.06em; /* offset the trailing space so caps stay centered */
+  font-size: clamp(1.5rem, 6vw, 4rem);
+  color: #FFF7AB;
+  mix-blend-mode: difference;
+}
